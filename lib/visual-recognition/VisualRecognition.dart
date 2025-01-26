@@ -9,9 +9,9 @@ import 'package:http_parser/http_parser.dart';
 import 'package:meta/meta.dart';
 
 class ClassResult {
-  String className;
-  double score;
-  String typeHierarchy;
+  late String className;
+  late double score;
+  late String typeHierarchy;
 
   ClassResult(Map result) {
     this.className = result["class"] ?? "";
@@ -35,14 +35,14 @@ class ClassResult {
 }
 
 class ClassifierResult {
-  String _classifierId;
-  String _name;
-  List<ClassResult> _classes;
+  late String _classifierId;
+  late String _name;
+  late List<ClassResult> _classes;
 
   ClassifierResult(Map item) {
     this._classifierId = item["classifier_id"] ?? "";
     this._name = item["name"] ?? "";
-    _classes = new List<ClassResult>();
+    _classes = List<ClassResult>.empty(growable: true);
     for (Map result in item["classes"]) {
       _classes.add(new ClassResult(result));
     }
@@ -70,31 +70,33 @@ class ClassifierResult {
     return this._name;
   }
 
-  ClassResult getHigherScore(){
-    double x=0;
-    ClassResult result;
+  ClassResult? getHigherScore() {
+    if (_classes.isEmpty) {
+      return null;
+    }
+    double x = 0;
+    ClassResult? result;
     for (ClassResult item in _classes) {
-      if(item.score>x){
-        x= item.score;
-        result=item;
+      if (item.score > x) {
+        x = item.score;
+        result = item;
       }
     }
     return result;
   }
-
 }
 
 class ClassifiedImage {
-  List<ClassifierResult> _classifiers;
-  String sourceUrl;
-  String resolvedUrl;
-  String image;
+  late List<ClassifierResult> _classifiers;
+  late String sourceUrl;
+  late String resolvedUrl;
+  late String image;
 
   ClassifiedImage(Map resultImage) {
     this.sourceUrl = resultImage["source_url"] ?? "";
     this.resolvedUrl = resultImage["resolved_url"] ?? "";
     this.image = resultImage["image"] ?? "";
-    _classifiers = new List<ClassifierResult>();
+    _classifiers = List<ClassifierResult>.empty(growable: true);
     for (Map item in resultImage["classifiers"]) {
       _classifiers.add(new ClassifierResult(item));
     }
@@ -117,14 +119,14 @@ class ClassifiedImage {
 }
 
 class ClassifiedImages {
-  List<ClassifiedImage> _images;
-  int imagesProcessed;
-  int customClasses;
+  late List<ClassifiedImage> _images;
+  late int imagesProcessed;
+  late int customClasses;
 
   ClassifiedImages(Map response) {
     this.imagesProcessed = response["images_processed"] ?? "";
     this.customClasses = response["custom_classes"] ?? "";
-    this._images = new List<ClassifiedImage>();
+    this._images = List<ClassifiedImage>.empty(growable: true);
     for (Map image in response["images"]) {
       _images.add(new ClassifiedImage(image));
     }
@@ -153,7 +155,7 @@ class VisualRecognition {
   String language;
 
   VisualRecognition(
-      {@required this.iamOptions,
+      {required this.iamOptions,
       this.language = "en",
       this.version = "2018-03-19",
       this.threshold = 0.5});
@@ -169,7 +171,7 @@ class VisualRecognition {
   Future<ClassifiedImages> classifyImageUrl(String url) async {
     String token = this.iamOptions.accessToken;
     var response = await http.get(
-      _getUrl("classify", url),
+      _getUrl("classify", url) as Uri,
       headers: {
         HttpHeaders.authorizationHeader: "Bearer $token",
         HttpHeaders.acceptLanguageHeader: this.language ?? Language.ENGLISH,

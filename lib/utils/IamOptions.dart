@@ -6,16 +6,16 @@ import 'dart:io';
 import 'dart:convert';
 
 class IamOptions {
-  String iamApiKey;
-  String url;
-  String accessToken;
-  String refreshToken;
-  String tokenType;
-  int expiresIn;
-  int expiration;
-  String scope;
+  late String iamApiKey;
+  late String url;
+  late String accessToken;
+  late String refreshToken;
+  late String tokenType;
+  late int expiresIn;
+  late int expiration;
+  late String scope;
 
-  IamOptions({@required this.iamApiKey, @required this.url});
+  IamOptions({required this.iamApiKey, required this.url});
 
   Future<IamOptions> build() async {
 
@@ -24,7 +24,7 @@ class IamOptions {
       "apikey": this.iamApiKey
     };
     var response = await http.post(
-      "https://iam.bluemix.net/identity/token",
+      "https://iam.bluemix.net/identity/token" as Uri,
       headers: {
         HttpHeaders.authorizationHeader: "Basic Yng6Yng=",
         HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded",
@@ -34,9 +34,6 @@ class IamOptions {
     ).timeout(const Duration(seconds: 360));
     Map data = json.decode(response.body);
     this.accessToken = data["access_token"];
-    if(this.accessToken==null){
-      print("AccessToken is Null, verified your Token");
-    }
     this.refreshToken = data["refresh_token"];
     this.tokenType = data["token_type"];
     this.expiresIn = data["expires_in"];

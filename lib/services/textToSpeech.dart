@@ -7,13 +7,13 @@ import 'dart:async';
 import 'dart:io';
 
 class Voice {
-  String gender;
-  dynamic supported_feature;
-  String name;
-  bool customizable;
-  String description;
-  String language;
-  String url;
+  late String gender;
+  late dynamic supported_feature;
+  late String name;
+  late bool customizable;
+  late String description;
+  late String language;
+  late String url;
 
   Voice(Map data) {
     this.gender = data['gender'];
@@ -27,15 +27,15 @@ class Voice {
 }
 
 class TextToSpeech {
-  String urlBase = "https://api.us-south.text-to-speech.watson.cloud.ibm.com";
-  String modelId;
-  final String version;
-  IamOptions iamOptions;
-  String accept;
-  String voice;
+  late String urlBase = "https://api.us-south.text-to-speech.watson.cloud.ibm.com";
+  late String modelId;
+  late final String version;
+  late IamOptions iamOptions;
+  late String accept;
+  late String voice;
 
   TextToSpeech(
-      {@required this.iamOptions,
+      {required this.iamOptions,
       this.version = "2018-05-01",
       this.accept = "audio/mp3",
       this.voice = "en-US_AllisonV3Voice"});
@@ -55,7 +55,7 @@ class TextToSpeech {
   Future<Uint8List> toSpeech(String text) async {
     String token = this.iamOptions.accessToken;
     var response = await http.post(
-      _getUrl("synthesize", param: "?voice=$voice"),
+      _getUrl("synthesize", param: "?voice=$voice") as Uri,
       headers: {
         HttpHeaders.authorizationHeader: "Bearer $token",
         HttpHeaders.contentTypeHeader: "application/json",
@@ -68,7 +68,7 @@ class TextToSpeech {
 
   Future<List<Voice>> getListVoices() async {
     String token = this.iamOptions.accessToken;
-    var response = await http.get(_getUrl("voices"), headers: {
+    var response = await http.get(_getUrl("voices") as Uri, headers: {
       HttpHeaders.authorizationHeader: "Bearer $token",
       HttpHeaders.contentTypeHeader: "application/json",
       HttpHeaders.acceptHeader: "application/json",

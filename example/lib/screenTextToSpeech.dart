@@ -47,11 +47,9 @@ class _ScreenTextToSpeech extends State<ScreenTextToSpeech> {
   }
 
   void _playSound() async {
-    if (mp3Uri != null) {
-      int result = await audioPlugin.play(mp3Uri, isLocal: false);
-      //print(result);
+    int result = await audioPlugin.play(mp3Uri, isLocal: false);
+    //print(result);
     }
-  }
 
   @override
   void initState() {
